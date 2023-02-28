@@ -1,15 +1,23 @@
+import axios from "axios";
 import { stat } from "fs";
 import { ChangeEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import select from "../../assets/select.png";
 
 interface IUserCreate {
   name: string;
   description: string;
+  image: File | null;
 }
 
 const CreatePage = () => {
+
+  const navigator = useNavigate();
+
   const [state, setState] = useState<IUserCreate>({
     name: "",
     description: "",
+    image: null
   });
 
   const onChangeHandler= (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
@@ -17,10 +25,30 @@ const CreatePage = () => {
     //console.log("Date input value", e.target.value);
     setState({...state, [e.target.name]: e.target.value});
   }
+  const onFileChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const {target} = e;
+    const {files} = target;
+    //e.target.files
+    console.log("Show data ", files);
+    if(files) {
+      const file = files[0];
+      setState({...state, image: file});
+    }
+    target.value="";
+  }
 
-  const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    try {
+      const result = await axios.post("http://localhost:5059/api/users", state, {
+        headers: {"Content-Type": "multipart/form-data"}
+      });
+      navigator("/");
+    }
+    catch(error: any) {
+      console.log("Щось пішло не так", error);
+      
+    }
     console.log("Data send Server", state);
   };
 
@@ -60,7 +88,6 @@ const CreatePage = () => {
               onChange={onChangeHandler}
               rows={3}
               placeholder="Enter Description"
-              
             ></textarea>
             <div className="invalid-feedback">
               Please enter a valid description.
@@ -69,14 +96,19 @@ const CreatePage = () => {
 
           <div className="mb-3">
             <label htmlFor="image" className="form-label">
-              Image URL
+              <img
+                src={(state.image==null ? select : URL.createObjectURL(state.image))}
+                alt="Оберіть фото"
+                width="150px"
+                style={{ cursor: "pointer" }}
+              />
             </label>
             <input
-              type="text"
-              className="form-control"
+              type="file"
+              className="d-none"
               id="image"
               name="image"
-              placeholder="Enter image URL"
+              onChange={onFileChangeHandler}
             />
             <div className="invalid-feedback">
               Please enter a valid image URL.

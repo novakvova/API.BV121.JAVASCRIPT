@@ -34,18 +34,28 @@ namespace WebShop.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(UserCreateViewModel model)
+        public async Task<IActionResult> Create([FromForm] UserCreateViewModel model)
         {
+            string imageName = String.Empty;
+            if (model.Image != null)
+            {
+                string exp = Path.GetExtension(model.Image.FileName);
+                imageName = Path.GetRandomFileName() + exp;
+                string dirSaveImage = Path.Combine(Directory.GetCurrentDirectory(), "images", imageName);
+                using (var stream = System.IO.File.Create(dirSaveImage))
+                {
+                    await model.Image.CopyToAsync(stream);
+                }
+            }
             var user = new UserEntity
             {
                 Name = model.Name,
                 Description = model.Description,
-                Image = model.Image,
+                Image = imageName,
             };
             _context.Users.Add(user);
             _context.SaveChanges();
             return Ok();
         }
-
     }
 }

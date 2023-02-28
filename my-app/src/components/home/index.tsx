@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ListFormat } from "typescript";
 
 interface IUserItem {
@@ -23,27 +24,40 @@ const HomePage = () => {
   const content = users.map((user) => (
     <tr key={user.id}>
       <th scope="row">{user.id}</th>
-      <td><img src={user.image} alt="" width="150" /></td>
+      <td><img src={"http://localhost:5059/images/"+user.image} alt="" width="150" /></td>
       <td>{user.name}</td>
       <td>{user.description}</td>
     </tr>
   ));
 
-  const onClickHandler = () => {
-    //console.log("Click button");
+  // const onClickHandler = () => {
+  //   //console.log("Click button");
+  //   axios.get<Array<IUserItem>>("http://localhost:5059/api/users")
+  //       .then((resp) => {
+  //           console.log("Запит на сервер прийшов", resp);
+  //           setUsers(resp.data);
+  //       });
+  //   //setUsers([]);
+  // }
+
+  useEffect(() => {
     axios.get<Array<IUserItem>>("http://localhost:5059/api/users")
         .then((resp) => {
             console.log("Запит на сервер прийшов", resp);
             setUsers(resp.data);
         });
-    //setUsers([]);
-  }
+  }, []);
+  
 
   return (
     <>
       <h1 className="text-center">Home Page</h1>
 
-      <button className="btn btn-success" onClick={onClickHandler}>Оновити список</button>
+      <Link to="/users/create" className="btn btn-danger"> 
+        Додати користувача
+      </Link>
+
+      {/* <button className="btn btn-success" onClick={onClickHandler}>Оновити список</button> */}
 
       <table className="table table-striped">
         <thead className="table-light">
