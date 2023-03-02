@@ -7,13 +7,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WebShop.Migrations
 {
     /// <inheritdoc />
-    public partial class AddtableUsers : Migration
+    public partial class AddtblCategories : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "tblUsers",
+                name: "tblCategories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -26,7 +26,7 @@ namespace WebShop.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tblUsers", x => x.Id);
+                    table.PrimaryKey("PK_tblCategories", x => x.Id);
                 });
         }
 
@@ -34,7 +34,7 @@ namespace WebShop.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "tblUsers");
+                name: "tblCategories");
         }
     }
 }

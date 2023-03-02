@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebShop.Data.Entities
 {
-    [Table("tblUsers")]
-    public class UserEntity : BaseEntity<int>
+    [Table("tblCategories")]
+    public class CategoryEntity : BaseEntity<int>
     {
         [Required]
         [StringLength(250)]

@@ -12,8 +12,8 @@ using WebShop.Data;
 namespace WebShop.Migrations
 {
     [DbContext(typeof(AppEFContext))]
-    [Migration("20230223171704_Add table Users")]
-    partial class AddtableUsers
+    [Migration("20230302161134_Add tblCategories")]
+    partial class AddtblCategories
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace WebShop.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("WebShop.Data.Entities.UserEntity", b =>
+            modelBuilder.Entity("WebShop.Data.Entities.CategoryEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace WebShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("tblUsers");
+                    b.ToTable("tblCategories");
                 });
 #pragma warning restore 612, 618
         }

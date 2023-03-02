@@ -40,7 +40,7 @@ const CreatePage = () => {
   const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const result = await axios.post("http://localhost:5059/api/users", state, {
+      const result = await axios.post("http://localhost:5059/api/categories", state, {
         headers: {"Content-Type": "multipart/form-data"}
       });
       navigator("/");

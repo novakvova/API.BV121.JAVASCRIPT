@@ -41,7 +41,7 @@ const HomePage = () => {
   // }
 
   useEffect(() => {
-    axios.get<Array<IUserItem>>("http://localhost:5059/api/users")
+    axios.get<Array<IUserItem>>("http://localhost:5059/api/categories")
         .then((resp) => {
             console.log("Запит на сервер прийшов", resp);
             setUsers(resp.data);

@@ -2,7 +2,7 @@
 
 namespace WebShop.Models
 {
-    public class UserItemViewModel
+    public class CategoryItemViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -10,10 +10,18 @@ namespace WebShop.Models
         public string Image { get; set; }
     }
 
-    public class UserCreateViewModel
+    public class CategoryCreateViewModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public IFormFile Image { get; set; }
+    }
+
+    public class CategoryEditViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public IFormFile File { get; set; }
     }
 }

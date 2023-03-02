@@ -11,6 +11,6 @@ namespace WebShop.Data
 
         }
 
-        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<CategoryEntity> Categories { get; set; }
     }
 }

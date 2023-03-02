@@ -22,7 +22,7 @@ namespace WebShop.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("WebShop.Data.Entities.UserEntity", b =>
+            modelBuilder.Entity("WebShop.Data.Entities.CategoryEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace WebShop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("tblUsers");
+                    b.ToTable("tblCategories");
                 });
 #pragma warning restore 612, 618
         }
