@@ -57,6 +57,10 @@ const HomePage = () => {
         Додати користувача
       </Link>
 
+      <Link to="/account/login" className="btn btn-success"> 
+        Вхід
+      </Link>
+
       {/* <button className="btn btn-success" onClick={onClickHandler}>Оновити список</button> */}
 
       <table className="table table-striped">
