@@ -1,7 +1,8 @@
-import axios from "axios";
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ListFormat } from "typescript";
+import { APP_ENV } from "../../env";
+import http from "../../http";
 
 interface IUserItem {
     id: number,
@@ -24,7 +25,7 @@ const HomePage = () => {
   const content = users.map((user) => (
     <tr key={user.id}>
       <th scope="row">{user.id}</th>
-      <td><img src={"http://localhost:5059/images/"+user.image} alt="" width="150" /></td>
+      <td><img src={APP_ENV.IMAGE_PATH+user.image} alt="" width="150" /></td>
       <td>{user.name}</td>
       <td>{user.description}</td>
     </tr>
@@ -41,7 +42,7 @@ const HomePage = () => {
   // }
 
   useEffect(() => {
-    axios.get<Array<IUserItem>>("http://localhost:5059/api/categories")
+    http.get<Array<IUserItem>>("api/categories")
         .then((resp) => {
             console.log("Запит на сервер прийшов", resp);
             setUsers(resp.data);

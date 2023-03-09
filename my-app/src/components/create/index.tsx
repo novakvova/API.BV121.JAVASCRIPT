@@ -1,8 +1,7 @@
-import axios from "axios";
-import { stat } from "fs";
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import select from "../../assets/select.png";
+import http from "../../http";
 
 interface IUserCreate {
   name: string;
@@ -40,7 +39,7 @@ const CreatePage = () => {
   const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const result = await axios.post("http://localhost:5059/api/categories", state, {
+      const result = await http.post("api/categories", state, {
         headers: {"Content-Type": "multipart/form-data"}
       });
       navigator("/");

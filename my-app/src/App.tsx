@@ -6,13 +6,14 @@ import CreatePage from './components/create';
 import { Route, Routes } from 'react-router-dom';
 import Home from './components/home';
 import LoginPage from './components/auth/login';
+import DefaultLayout from './components/containers/default';
 
 function App() {
   return (
     <>
-      <div className="container">
+      
         <Routes>
-          <Route path="/">
+          <Route path="/" element={<DefaultLayout/>}>
             <Route index element={<Home />} />
             <Route path="users/create" element={<CreatePage />} />
             <Route path="account/login" element={<LoginPage />} />
@@ -20,7 +21,6 @@ function App() {
             {/* <Route path="*" element={<NoMatch />} /> */}
           </Route>
         </Routes>
-      </div>
     </>
   );
 }

@@ -5,6 +5,7 @@ using WebShop.Abastract;
 using WebShop.Constants;
 using WebShop.Data.Entities.Identity;
 using WebShop.Models;
+using WebShop.Services;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace WebShop.Controllers
@@ -22,10 +23,65 @@ namespace WebShop.Controllers
         }
 
         [HttpPost("google/login")]
-        public async Task<IActionResult> GoogleLogin([FromForm]GoogleLoginViewModel model)
+        public async Task<IActionResult> GoogleLogin(GoogleLogInViewModel model)
         {
             var payload = await _jwtTokenService.VerifyGoogleToken(model.Token);
-            if(payload == null) {
+            var token = "";
+            if (payload == null)
+            {
+                return BadRequest();
+            }
+            string provider = "Google";
+            var info = new UserLoginInfo(provider, payload.Subject, provider);
+            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            bool isNewUser = false;
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(payload.Email);
+                if (user == null)
+                {
+                    isNewUser = true;
+
+                    IFormFile ifile = await ConvertUrlToFormFile.ConvertUrlToIFormFile(model.ImagePath);
+
+                    var imageName = Path.GetRandomFileName() + ".jpg";
+                    string dirSaveImage = Path.Combine(Directory.GetCurrentDirectory(), "images", imageName);
+                    using (var stream = System.IO.File.Create(dirSaveImage))
+                    {
+                        await ifile.CopyToAsync(stream);
+                    }
+
+                    user = new UserEntity
+                    {
+                        Email = payload.Email,
+                        UserName = payload.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Image = imageName
+
+                    };
+                    return Ok(new { isNewUser, user, token });
+
+                }
+
+                var resultuserLogin = await _userManager.AddLoginAsync(user, info);
+                if (!resultuserLogin.Succeeded)
+                {
+                    return BadRequest();
+                }
+            }
+
+            token = await _jwtTokenService.CreateToken(user);
+
+            return Ok(new { isNewUser, user, token });
+        }
+
+        [HttpPost("google/registartion")]
+        public async Task<IActionResult> GoogleRegistartion([FromForm] GoogleLogInViewModel model)
+        {
+            var payload = await _jwtTokenService.VerifyGoogleToken(model.Token);
+            if (payload == null)
+            {
                 return BadRequest();
             }
             string provider = "Google";
@@ -34,40 +90,101 @@ namespace WebShop.Controllers
             if (user == null)
             {
                 user = await _userManager.FindByEmailAsync(payload.Email);
-                if(user == null)
+                if (user == null)
                 {
-                    string exp = Path.GetExtension(model.Image.FileName);
-                    var imageName = Path.GetRandomFileName() + exp;
-                    string dirSaveImage = Path.Combine(Directory.GetCurrentDirectory(), "images", imageName);
-                    using (var stream = System.IO.File.Create(dirSaveImage))
+                    var imageName = "";
+                    if (model.UploadImage != null)
                     {
-                        await model.Image.CopyToAsync(stream);
+                        string exp = Path.GetExtension(model.UploadImage.FileName);
+                        imageName = Path.GetRandomFileName() + exp;
+                        string dirSaveImage = Path.Combine(Directory.GetCurrentDirectory(), "images", imageName);
+                        using (var stream = System.IO.File.Create(dirSaveImage))
+                        {
+                            await model.UploadImage.CopyToAsync(stream);
+                        }
+                        model.ImagePath = imageName;
                     }
+
                     user = new UserEntity
                     {
                         Email = payload.Email,
-                        UserName = payload.Email,
+                        UserName = model.UserName,
                         FirstName = model.FirstName,
                         LastName = model.LastName,
-                        Image = imageName
+                        Image = model.ImagePath,
+
                     };
                     var resultCreate = await _userManager.CreateAsync(user);
-                    if(!resultCreate.Succeeded) {
+                    if (!resultCreate.Succeeded)
+                    {
                         return BadRequest();
                     }
+
                     await _userManager.AddToRoleAsync(user, Roles.User);
-                }
-                var resultUserLogin = await _userManager.AddLoginAsync(user, info);
-                if (!resultUserLogin.Succeeded)
-                {
-                    return BadRequest();
+
+                    return Ok();
+
                 }
             }
 
-            //Тепер можемо користувача логінити
-            var token = _jwtTokenService.CreateToken(user);
-            return Ok(new { token });
+            return BadRequest();
+        }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
+                if (!isPasswordValid)
+                {
+                    return BadRequest();
+
+                }
+                var token = _jwtTokenService.CreateToken(user);
+                return Ok(new { token });
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromForm] RegisterUserViewModel model)
+        {
+
+            string imageName = String.Empty;
+            if (model.UploadImage != null)
+            {
+                string exp = Path.GetExtension(model.UploadImage.FileName);
+                imageName = Path.GetRandomFileName() + exp;
+                string dirSaveImage = Path.Combine(Directory.GetCurrentDirectory(), "images", imageName);
+                using (var stream = System.IO.File.Create(dirSaveImage))
+                {
+                    await model.UploadImage.CopyToAsync(stream);
+                }
+                model.ImgPath = imageName;
+            }
+
+            UserEntity user = new UserEntity()
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                UserName = model.UserName,
+                Email = model.Email,
+                Image = imageName
+            };
+
+            var result = _userManager.CreateAsync(user, model.Password).Result;
+            if (result.Succeeded)
+            {
+                result = _userManager.AddToRoleAsync(user, Roles.User).Result;
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
     }
