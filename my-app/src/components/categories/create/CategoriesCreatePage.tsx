@@ -1,27 +1,22 @@
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import select from "../../assets/select.png";
-import http from "../../http";
+import select from "../../../assets/select.png";
+import http from "../../../http";
+import { ICategoryCreate } from "../types";
 
-interface IUserCreate {
-  name: string;
-  description: string;
-  image: File | null;
-}
 
-const CreatePage = () => {
+
+const CategoriesCreatePage = () => {
 
   const navigator = useNavigate();
 
-  const [state, setState] = useState<IUserCreate>({
+  const [state, setState] = useState<ICategoryCreate>({
     name: "",
     description: "",
     image: null
   });
 
   const onChangeHandler= (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
-    //console.log("Date input name", e.target.name);
-    //console.log("Date input value", e.target.value);
     setState({...state, [e.target.name]: e.target.value});
   }
   const onFileChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,12 +51,12 @@ const CreatePage = () => {
       {/* <h1 className="text-center">Додати користувача</h1> */}
 
       <div className="row col-6 offset-3">
-        <h1 className="mt-5 mb-4 text-center">Add User</h1>
+        <h1 className="mt-5 mb-4 text-center">Додати категорію</h1>
 
         <form onSubmit={onSubmitHandler}>
           <div className="mb-3">
             <label htmlFor="name" className="form-label">
-              Name
+              Назва
             </label>
             <input
               type="text"
@@ -77,7 +72,7 @@ const CreatePage = () => {
 
           <div className="mb-3">
             <label htmlFor="description" className="form-label">
-              Description
+              Опис
             </label>
             <textarea
               className="form-control"
@@ -116,7 +111,7 @@ const CreatePage = () => {
 
           <div className="text-center">
             <button type="submit" className="btn btn-primary">
-              Add User
+              Додати категорію
             </button>
           </div>
         </form>
@@ -125,4 +120,4 @@ const CreatePage = () => {
   );
 };
 
-export default CreatePage;
+export default CategoriesCreatePage;

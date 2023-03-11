@@ -52,10 +52,10 @@ const HomePage = () => {
 
   return (
     <>
-      <h1 className="text-center">Home Page</h1>
+      <h1 className="text-center">Головна торінка</h1>
 
-      <Link to="/users/create" className="btn btn-danger"> 
-        Додати користувача
+      <Link to="/categories/create" className="btn btn-danger"> 
+        Додати категорію
       </Link>
 
       <Link to="/account/login" className="btn btn-success"> 
