@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using NETCore.MailKit.Core;
 using System.Text;
 using WebShop.Abastract;
 using WebShop.Data;
@@ -28,6 +29,7 @@ builder.Services.AddIdentity<UserEntity, RoleEntity>(options =>
 
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<ISmtpEmailService, SmtpEmailService>();
 
 var signinKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<String>("JWTSecretKey")));
 

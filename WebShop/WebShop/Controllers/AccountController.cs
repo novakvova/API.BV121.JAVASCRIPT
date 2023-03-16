@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using WebShop.Abastract;
 using WebShop.Constants;
 using WebShop.Data.Entities.Identity;
@@ -16,10 +17,17 @@ namespace WebShop.Controllers
     {
         private readonly IJwtTokenService _jwtTokenService;
         private readonly UserManager<UserEntity> _userManager;
-        public AccountController(IJwtTokenService jwtTokenService, UserManager<UserEntity> userManager)
+        private readonly ISmtpEmailService _emailService;
+        private readonly IConfiguration _configuration;
+        public AccountController(IJwtTokenService jwtTokenService, 
+            UserManager<UserEntity> userManager, 
+            ISmtpEmailService emailService, 
+            IConfiguration configuration)
         {
             _jwtTokenService = jwtTokenService;
             _userManager = userManager;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
         [HttpPost("google/login")]
@@ -185,6 +193,38 @@ namespace WebShop.Controllers
             {
                 return BadRequest();
             }
+        }
+
+
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return NotFound();
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var frontendUrl = _configuration.GetValue<string>("FrontEndURL");
+
+            var callbackUrl = $"{frontendUrl}/resetpassword?userId={user.Id}&" +
+                $"code={WebUtility.UrlEncode(token)}";
+
+            var message = new Message()
+            {
+                To = user.Email,
+                Subject = "Відновлення пароля",
+                Body = "Щоб відновити пароль нажміть на посилання:" +
+                    $"<a href='{callbackUrl}'>Відновити пароль</a>"
+            };
+            _emailService.Send(message);
+            return Ok();
+        }
+
+        [HttpPost("changePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            var res = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            return Ok();
         }
 
     }

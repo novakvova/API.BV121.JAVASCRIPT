@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WebShop.Abastract;
 using WebShop.Constants;
 using WebShop.Data.Entities.Identity;
+using WebShop.Models;
 
 namespace WebShop.Data
 {
@@ -13,6 +15,7 @@ namespace WebShop.Data
                 app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<AppEFContext>();
+                var emailService = scope.ServiceProvider.GetRequiredService<ISmtpEmailService>();
                 context.Database.Migrate();
                 var userManager = scope.ServiceProvider
                     .GetRequiredService<UserManager<UserEntity>>();
@@ -53,6 +56,13 @@ namespace WebShop.Data
                     }
                 }
 
+                //Message message = new Message();
+                //message.Subject = "Це прикольний шаблон";
+                //var dir = Path.Combine(Directory.GetCurrentDirectory(), "email-template/index.html");
+                //string html = File.ReadAllText(dir);
+                //message.Body = html; //"Беріть гернератори, інвертери або свічки і усе буде круто";
+                //message.To = "novakvova@gmail.com";
+                //emailService.Send(message);
             }
         }
     }

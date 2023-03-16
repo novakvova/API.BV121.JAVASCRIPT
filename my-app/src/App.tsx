@@ -7,6 +7,7 @@ import Home from './components/home';
 import LoginPage from './components/auth/login';
 import DefaultLayout from './components/containers/default';
 import CategoriesCreatePage from './components/categories/create';
+import ResetPasswordPage from './components/auth/resetpassword';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="categories/create" element={<CategoriesCreatePage />} />
             <Route path="account/login" element={<LoginPage />} />
+            <Route path="resetpassword" element={<ResetPasswordPage />} />
 
             {/* <Route path="*" element={<NoMatch />} /> */}
           </Route>
