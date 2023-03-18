@@ -1,13 +1,13 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import HomePage from './components/home';
 import { Route, Routes } from 'react-router-dom';
 import Home from './components/home';
 import LoginPage from './components/auth/login';
 import DefaultLayout from './components/containers/default';
 import CategoriesCreatePage from './components/categories/create';
 import ResetPasswordPage from './components/auth/resetpassword';
+import ProductsList from './components/products/list';
 
 function App() {
   return (
@@ -18,6 +18,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="categories/create" element={<CategoriesCreatePage />} />
             <Route path="account/login" element={<LoginPage />} />
+            <Route path="products/list" element={<ProductsList />} />
             <Route path="resetpassword" element={<ResetPasswordPage />} />
 
             {/* <Route path="*" element={<NoMatch />} /> */}

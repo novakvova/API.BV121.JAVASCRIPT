@@ -36,6 +36,58 @@ namespace WebShop.Controllers
             return Ok(list);
         }
 
+        [HttpGet("search")]
+        public IActionResult Search([FromQuery] ProductSearchViewModel search)
+        {
+            var query = _context.Products
+                .Include(x => x.Category)
+                .Include(x => x.Images)
+                .AsQueryable();
+
+            if(!string.IsNullOrEmpty(search.Name))
+            {
+                query = query.Where(x => x.Name.ToLower().Contains(search.Name.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(search.Description))
+            {
+                query = query.Where(x => x.Description.ToLower().Contains(search.Description.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(search.CategoryId))
+            {
+                int catid=int.Parse(search.CategoryId);
+                query = query.Where(x => x.CategoryId==catid);
+            }
+
+            int page = search.Page;
+            int pageSize = 5;
+
+            var list = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new ProductItemView
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    Price = x.Price,
+                    Category = x.Category.Name,
+                    Images = x.Images.Select(x => x.Name).ToList()
+                })
+                .ToList();
+
+            int total = query.Count();
+            int pages = (int)Math.Ceiling(total / (double)pageSize);
+
+            return Ok(new ProductSearchResultViewModel
+            {
+                Products = list,
+                Total = total,
+                CurrentPage = page,
+                Pages = pages
+
+            });
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] ProductCreateView model)
         {
