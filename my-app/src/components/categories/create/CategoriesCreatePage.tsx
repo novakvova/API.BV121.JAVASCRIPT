@@ -1,49 +1,79 @@
+import classNames from "classnames";
+import { useFormik } from "formik";
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import select from "../../../assets/select.png";
 import http from "../../../http";
+import InputGroup from "../../common/InputGroup";
 import { ICategoryCreate } from "../types";
-
-
+import { CreateSchema } from "./validation";
 
 const CategoriesCreatePage = () => {
-
   const navigator = useNavigate();
 
-  const [state, setState] = useState<ICategoryCreate>({
+  // const [state, setState] = useState<ICategoryCreate>({
+  //   name: "",
+  //   description: "",
+  //   image: null
+  // });
+
+  const initValues: ICategoryCreate = {
     name: "",
     description: "",
-    image: null
-  });
+    image: null,
+  };
 
-  const onChangeHandler= (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
-    setState({...state, [e.target.name]: e.target.value});
-  }
-  const onFileChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const {target} = e;
-    const {files} = target;
-    //e.target.files
-    console.log("Show data ", files);
-    if(files) {
-      const file = files[0];
-      setState({...state, image: file});
-    }
-    target.value="";
-  }
+  // const onChangeHandler= (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
+  //   setState({...state, [e.target.name]: e.target.value});
+  // }
 
-  const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+
+  // const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   try {
+  //     const result = await http.post("api/categories", state, {
+  //       headers: {"Content-Type": "multipart/form-data"}
+  //     });
+  //     navigator("/");
+  //   }
+  //   catch(error: any) {
+  //     console.log("Щось пішло не так", error);
+
+  //   }
+  //   console.log("Data send Server", state);
+  // };
+
+  const onSubmitFormik = async (values: ICategoryCreate) => {
+    // console.log("Formik submit", values);
     try {
-      const result = await http.post("api/categories", state, {
-        headers: {"Content-Type": "multipart/form-data"}
+      const result = await http.post("api/categories", values, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
       navigator("/");
-    }
-    catch(error: any) {
+    } catch (error: any) {
       console.log("Щось пішло не так", error);
-      
     }
-    console.log("Data send Server", state);
+  };
+
+  const formik = useFormik({
+    initialValues: initValues,
+    validationSchema: CreateSchema,
+    onSubmit: onSubmitFormik,
+  });
+
+  const { values, errors, touched, handleSubmit, handleChange, setFieldValue } = formik;
+
+  const onFileChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const { target } = e;
+    const { files } = target;
+    //e.target.files
+    console.log("Show data ", files);
+    if (files) {
+      const file = files[0];
+      setFieldValue("image", file);
+      //setState({...state, image: file});
+    }
+    target.value = "";
   };
 
   return (
@@ -53,45 +83,46 @@ const CategoriesCreatePage = () => {
       <div className="row col-6 offset-3">
         <h1 className="mt-5 mb-4 text-center">Додати категорію</h1>
 
-        <form onSubmit={onSubmitHandler}>
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label">
-              Назва
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="name"
-              name="name"
-              value={state.name}
-              onChange={onChangeHandler}
-              placeholder="Enter Name"
-            />
-            <div className="invalid-feedback">Please enter a valid name.</div>
-          </div>
+        <form onSubmit={handleSubmit}>
+
+        <InputGroup
+          field="name"
+          label="Назва"
+          onChange={handleChange}
+          error={errors.name}
+          touched={touched.name}
+        />
+          
 
           <div className="mb-3">
             <label htmlFor="description" className="form-label">
               Опис
             </label>
             <textarea
-              className="form-control"
+              className={classNames("form-control", {
+                "is-invalid": touched["description"] && errors["description"],
+                "is-valid": touched["description"] && !errors["description"],
+              })}
               id="description"
               name="description"
-              value={state.description}
-              onChange={onChangeHandler}
+              value={values.description}
+              onChange={handleChange}
               rows={3}
               placeholder="Enter Description"
             ></textarea>
-            <div className="invalid-feedback">
-              Please enter a valid description.
-            </div>
+            {touched["description"] && errors["description"] && (
+              <div className="invalid-feedback">{errors["description"]}</div>
+            )}
           </div>
 
           <div className="mb-3">
             <label htmlFor="image" className="form-label">
               <img
-                src={(state.image==null ? select : URL.createObjectURL(state.image))}
+                src={
+                  values.image == null
+                    ? select
+                    : URL.createObjectURL(values.image)
+                }
                 alt="Оберіть фото"
                 width="150px"
                 style={{ cursor: "pointer" }}
@@ -104,9 +135,11 @@ const CategoriesCreatePage = () => {
               name="image"
               onChange={onFileChangeHandler}
             />
-            <div className="invalid-feedback">
-              Please enter a valid image URL.
-            </div>
+            {touched["image"] && errors["image"] && (
+              <div className="alert alert-danger" role="alert">
+                {errors["image"]}
+              </div>
+            )}
           </div>
 
           <div className="text-center">
