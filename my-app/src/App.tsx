@@ -8,6 +8,8 @@ import DefaultLayout from './components/containers/default';
 import CategoriesCreatePage from './components/categories/create';
 import ResetPasswordPage from './components/auth/resetpassword';
 import ProductsList from './components/products/list';
+import AdminLayout from './components/containers/admin';
+import AdminProductListPage from './components/admin/products/list';
 
 function App() {
   return (
@@ -20,6 +22,16 @@ function App() {
             <Route path="account/login" element={<LoginPage />} />
             <Route path="products/list" element={<ProductsList />} />
             <Route path="resetpassword" element={<ResetPasswordPage />} />
+
+            {/* <Route path="*" element={<NoMatch />} /> */}
+          </Route>
+
+          <Route path="/admin" element={<AdminLayout/>}>
+            <Route index element={<AdminProductListPage />} />
+            {/* <Route path="categories/create" element={<CategoriesCreatePage />} />
+            <Route path="account/login" element={<LoginPage />} />
+            <Route path="products/list" element={<ProductsList />} />
+            <Route path="resetpassword" element={<ResetPasswordPage />} /> */}
 
             {/* <Route path="*" element={<NoMatch />} /> */}
           </Route>

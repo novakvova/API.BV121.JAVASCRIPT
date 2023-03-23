@@ -1,24 +1,22 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { AuthActionType, IAuthUser } from "../../auth/types";
 
-const DefaultHeader = () => {
-
-  const {isAuth} = useSelector((store: any)=> store.auth as IAuthUser);
+const AdminHeader = () => {
+  const { isAuth } = useSelector((store: any) => store.auth as IAuthUser);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    dispatch({type: AuthActionType.USER_LOGOUT});
-  }
-
-
+    dispatch({ type: AuthActionType.USER_LOGOUT });
+  };
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container">
           <Link className="navbar-brand" to="/">
-            My App
+            Панель адміна
           </Link>
 
           <button
@@ -36,20 +34,24 @@ const DefaultHeader = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link to="/" className="nav-link active" aria-current="page">
-                  Home
+                <Link
+                  to="/admin"
+                  className="nav-link active"
+                  aria-current="page"
+                >
+                  Список продуктів
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link to="categories/create" className="nav-link">
-                  Додати категорію
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to="products/list" className="nav-link">
-                  Продукти
-                </Link>
-              </li>
+              {/* <li className="nav-item">
+                  <Link to="categories/create" className="nav-link">
+                    Додати категорію
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="products/list" className="nav-link">
+                    Продукти
+                  </Link>
+                </li> */}
             </ul>
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
               {isAuth ? (
@@ -81,5 +83,5 @@ const DefaultHeader = () => {
       </nav>
     </>
   );
-};
-export default DefaultHeader;
+}
+export default AdminHeader;
