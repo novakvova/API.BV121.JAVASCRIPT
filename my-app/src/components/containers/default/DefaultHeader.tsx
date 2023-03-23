@@ -53,6 +53,7 @@ const DefaultHeader = () => {
             </ul>
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
               {isAuth ? (
+                <>
                 <li className="nav-item">
                   <button
                     onClick={handleLogout}
@@ -61,6 +62,12 @@ const DefaultHeader = () => {
                     Log Out
                   </button>
                 </li>
+                 <li className="nav-item">
+                 <Link to="/admin" className="nav-link">
+                   Admin
+                 </Link>
+               </li>
+               </>
               ) : (
                 <>
                   <li className="nav-item">
